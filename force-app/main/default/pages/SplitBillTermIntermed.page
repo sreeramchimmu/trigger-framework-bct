@@ -1,0 +1,93 @@
+<apex:page standardController="Opportunity_Line_Item__c" extensions="SplitBillIntermed">
+    <style>
+        .pbBottomButtons {
+        background:  #f0f2f3  !important
+        }
+    .tableStyle {
+        background:#f0f2f3;
+        border-radius:5px;
+        border:1px solid #ccc;
+        margin-left:150px;
+        }
+         .tableStyle tr{
+        border-collapse:collapse;
+        border-bottom:1px solid #ccc;
+        line-height:20px;
+        }
+        
+    </style> 
+    <apex:form >
+                 <apex:pageblock id="pb1" >
+                 <apex:panelGrid columns="2" styleClass="tableStyle">
+                   <!-- <apex:panelGrid title="pgrd1"  width="500">
+                        <apex:facet name="header">Milestone</apex:facet>
+                         <apex:inputField value="{!splitTerm.Milestone__c}"/>
+                     </apex:panelGrid> -->
+                     <apex:panelGrid title="pgrd3" width="200"  >
+                        <apex:facet name="header">Opportunity Stage</apex:facet>
+                     </apex:panelGrid>
+                     <apex:panelGrid title="pgrd3" width="200" >
+                       <apex:outputText value="{!oppLineStage}"></apex:outputText>
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd1"  width="200">
+                        <apex:facet name="header">Opportunity Funnel Code</apex:facet>
+                    </apex:panelGrid>
+                     <apex:panelGrid title="pgrd1"  width="200" >
+                        <apex:outputText value="{!oppStageCode}"/>
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd3" width="200">
+                        <apex:facet name="header">Available Amount</apex:facet>
+                    </apex:panelGrid>
+                     <apex:panelGrid title="pgrd3" width="155" >
+                        <apex:outputText value="{!balanceAmt}"></apex:outputText>
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd2" width="175">
+                        <apex:facet name="header">Bill Term in Days</apex:facet>
+                    </apex:panelGrid>
+                     <apex:panelGrid title="pgrd2" width="200" >
+                        <apex:inputField Value="{!splitTerm.Billing_Term__c}" required="true" />
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd2" width="175">
+                        <apex:facet name="header">No of Splits required</apex:facet>
+                    </apex:panelGrid>
+                     <apex:panelGrid title="pgrd2" width="200" >
+                        <apex:inputField Value="{!splitTerm.Split_days__c}" required="true" />
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd3" width="155">
+                        <apex:facet name="header">Billing Date</apex:facet>
+                         
+                     </apex:panelGrid>
+                     <apex:panelGrid title="pgrd3" width="200" >
+                        
+                         <apex:inputField Value="{!splitTerm.Billing_Date__c}"/>
+                     </apex:panelGrid>
+                     
+                     <apex:panelGrid title="pgrd4" width="155">
+                        <apex:facet name="header">Default Billing Milestone</apex:facet>
+                         
+                     </apex:panelGrid>
+                     <apex:panelGrid title="pgrd4" width="200" >
+                        
+                         <apex:inputField Value="{!splitTerm.Milestone__c}" />
+                     </apex:panelGrid>
+                     <!-- <apex:panelGrid title="pgrd3" width="155">
+                        <apex:facet name="header">Available Amount</apex:facet>
+                          <apex:outputText value="{!balanceAmt}"></apex:outputText>
+                     </apex:panelGrid> -->
+                    <!-- <apex:panelGrid title="pgrd4" width="150">
+                        <apex:facet name="header">Amount</apex:facet>
+                         <apex:inputField Value="{!splitTerm.Percentage__c}"/>
+                     </apex:panelGrid> -->
+                 </apex:panelGrid>
+                      <apex:pageBlockButtons >
+            	<apex:commandbutton value="Split Billing Term"  action="{!splitBillInter}" disabled="{!If(balanceAmt <= 0, true, false )}" />
+                <apex:commandbutton value="Back"  action="{!navback}" Immediate="true"  />
+        	</apex:pageBlockButtons>
+            </apex:pageblock>
+        </apex:form>
+</apex:page>

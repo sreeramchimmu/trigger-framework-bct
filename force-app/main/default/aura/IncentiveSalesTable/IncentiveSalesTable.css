@@ -1,0 +1,17 @@
+.THIS#salesTbl h3{
+    color: white;
+    background-color: #4d6892;
+    border-color: #4d6892;
+}
+.THIS#salesTbl table thead tr th {
+    background-color: #d3dce8;
+}
+.THIS#salesTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #d3dce8;
+}
+.THIS#salesTbl table tbody tr.subTotal td{
+    font-weight: bold;
+    color:#4d6892;
+    background-color: #ebeef3;
+}

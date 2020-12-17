@@ -1,0 +1,22 @@
+.THIS#actualTbl h3{
+    color: white;    
+    background-color: #6cb544;
+    border-color: #6cb544;
+}
+.THIS#actualTbl table thead tr th {
+    background-color: #c1e0b1;
+}
+.THIS#actualTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #def2d3;
+}
+.THIS.alterInfo div {
+	border: solid 1px #dddbda;
+}
+.THIS.alterInfo div span{
+	overflow: visible; 
+}
+.THIS.alterInfo div h1{
+    color: #152033;
+    font-weight: bold;
+}

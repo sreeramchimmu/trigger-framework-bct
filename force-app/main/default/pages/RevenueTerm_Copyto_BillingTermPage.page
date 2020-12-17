@@ -1,0 +1,15 @@
+<apex:page standardController="Opportunity_Line_Item__c" extensions="RevenueTerm_Copyto_BillingTerm_CX">
+    <apex:form >
+    	<apex:pageBlock >
+          	<apex:pageBlockTable var="Billing" value="{!results}">
+                <apex:column value="{!Billing.Milestone__c}" />
+            	<apex:column value="{!Billing.Revenue_Date__c}" />
+            	<apex:column value="{!Billing.Percentage__c}" />
+        	</apex:pageBlockTable>
+        	<apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save" action="{!Save}" immediate="true"/>
+            	<apex:commandbutton value="Cancel" action="{!navback}" Immediate="true"/>
+        	</apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

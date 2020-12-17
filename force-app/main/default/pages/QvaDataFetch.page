@@ -1,0 +1,456 @@
+<apex:page controller="QvaDataFetchController" lightningStylesheets="false">
+    <style>
+    	.wd100{width:100px;}
+        
+        div.a {
+          font-size: 13px; 
+        }
+    </style>
+    
+        <apex:form id="fm1" >
+         <apex:pageMessages />
+              <apex:pageBlock >
+                <apex:pageBlockButtons id="pbb" >
+                  	<apex:commandbutton value="Submit" action="{!submitQuota}" rendered="{!isCreate}" id="sbt"/>
+                    <apex:commandbutton value="Edit" action="{!makeEdit}" reRender="fm1" rendered="{!isExisting}" oncomplete="totalCalculation()"/>
+                    <apex:commandbutton value="Update" action="{!updateQuota}" rendered="{!isUpdate}" />
+                    <apex:commandbutton value="Cancel" action="{!navback}" Immediate="true"/>
+                </apex:pageBlockButtons>
+                 <!-- <table>
+                      <tr bgcolor="#CEE3F6"><TH>Product</TH>
+                          <TH>Amount (USD)</TH>
+                      </tr>
+                      <tr bgcolor="#F2F2F2" ><td>Asymmetrix</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totAsymetrixQuota}"/></apex:outputText></td></tr>
+                      <!--<tr bgcolor="#F2F2F2"><td>CueTrack / CueTrans</td><td align="RIGHT">{!totCueTrTkQuota}</td></tr>
+                      <tr bgcolor="#F2F2F2"><td>DT / Pulse</td><td align="RIGHT">{!totDTPulQuota}</td></tr>-->
+                     <!-- <tr bgcolor="#F2F2F2" ><td>Dropthought</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totDropthoughtCuetrackPulseQuota}"/></apex:outputText></td></tr>
+                      <tr bgcolor="#F2F2F2" ><td>DSCM</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totCueTransFSAPGeoDataFYQuota}"/></apex:outputText></td></tr>
+                      <tr bgcolor="#F2F2F2" ><td>Retina</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totRetinaQuota}"/></apex:outputText></td></tr>
+                       <!--<tr bgcolor="#F2F2F2" ><td>GeoDataFY</td><td align="RIGHT">{!totGeoDataFYQuota}</td></tr>-->
+                      <!--<tr bgcolor="#8fe3d9 "><td>IP</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!overallHurQuota}"/></apex:outputText></td></tr>
+                      <tr bgcolor="#8fe3d9 " ><td>COE</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!overallCoeQuota}"/></apex:outputText></td></tr>-->
+                     <!-- <tr bgcolor="#f9b9ab"><td>Overall</td><td align="RIGHT"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!overallQuota}"/></apex:outputText></td></tr>
+                      <tr></tr>
+                      <tr></tr>
+                      <tr></tr>
+                  </table> --> 
+                  <div class="a">
+                  <table style="width:25%" border= "2px solid black" >
+                      <tr>
+                        <th bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">Product</th>
+                        <td bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">Asymmetrix</td>
+                        <td bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">Dropthought</td>
+                        <td bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">DSCM</td>    
+                        <td bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">Retina</td>
+                        <td bgcolor="#f9b9ab" border= "1px solid black" border-collapse="collapse">Overall</td> 
+                      </tr>
+                      
+                      <tr>
+                        <th bgcolor="#CEE3F6" border= "1px solid black" border-collapse="collapse">Amount (USD)</th>
+                        <td bgcolor="#F2F2F2" border= "1px solid black" border-collapse="collapse"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totAsymetrixQuota}"/></apex:outputText></td>
+                        <td bgcolor="#F2F2F2" border= "1px solid black" border-collapse="collapse"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totDropthoughtCuetrackPulseQuota}"/></apex:outputText></td>
+                        <td bgcolor="#F2F2F2" border= "1px solid black" border-collapse="collapse"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totCueTransFSAPGeoDataFYQuota}"/></apex:outputText></td>    
+                        <td bgcolor="#F2F2F2" border= "1px solid black" border-collapse="collapse"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!totRetinaQuota}"/></apex:outputText></td>    
+                        <td bgcolor="#f9b9ab" border= "1px solid black" border-collapse="collapse"><apex:outputText value="{0,Number, #,###}"><apex:param value="{!overallQuota}"/></apex:outputText></td>  
+                      </tr>
+                      
+                  </table>
+                  </div>
+                  
+                  <br/>
+                  <br/>
+                  
+                   
+                  <apex:pageBlockTable value="{!innerRwlst}" var="qta" id="pgt" width="2px" frame="border">
+                      <apex:column headerValue="Geo Location" value="{!qta.geoLocation}" style="width:100px;" />
+                  	  <apex:column headerValue="Quota Owner" value="{!qta.quotaOwnerName}" style="width:200px;" />
+                       <apex:column headervalue="Quota Year">
+                           <apex:outputText value="{0,Number,####}">
+							<apex:param value="{!qta.qdet.QuotaYear__c}"/>
+                           </apex:outputText>
+                       </apex:column>
+                       <apex:column headerValue="Quota Quarter" value="{!qta.quarterName}"/>
+                       <apex:column headerValue="Quota Month" value="{!qta.monthName}">
+                            <apex:facet name="footer">
+                    		<apex:outputText value="Total Amount"  style="float: right;"/>
+                			</apex:facet>
+                      </apex:column>
+                           
+                       <apex:column headerValue="Quota Amount">
+                        	<apex:inputField value="{!qta.qdet.Quota_Amount__c}" id="quotaAmount_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="quotaAmount_O" rendered="{!isExisting}" styleClass="wd100">
+                           		<apex:param value="{!qta.qdet.Quota_Amount__c}"/>
+                           	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="quotaAmount_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <!-------------------------------------- New requirement for adding Hiddenquota ---------------------------------------------->
+                      <apex:column headerValue="Business Head Quota">
+                        	<apex:inputField value="{!qta.qdet.Hidden_Quota__c}" id="businessHeadQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                          
+                            <apex:outputText value="{0,Number,#,###}" id="businessHeadQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Hidden_Quota__c}"/>
+                          	</apex:outputText>
+                          
+                          	<apex:facet name="footer">
+                                <apex:outputText id="businessHeadQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column> 
+                      
+                      <apex:column headerValue="Geo Head Quota">
+                        	<apex:inputField value="{!qta.qdet.Hidden_Quota_2__c}" id="geoHeadQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Hidden_Quota_2__c}"/>
+                          	</apex:outputText>
+                          
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head IP Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_IP_Base_Quota__c}" id="geoHeadIPBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadIPBaseQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_IP_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadIPBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head TIBCO Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_TIBCO_Quota__c}" id="geoHeadTIBCOQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadTIBCOQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_TIBCO_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadTIBCOQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head Asymmetrix Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_Asymmetrix_Quota__c}" id="geoHeadAsymmetrixQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadAsymmetrixQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_Asymmetrix_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadAsymmetrixQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head Dropthought Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_Dropthought_Quota__c}" id="geoHeadDropthoughtQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadDropthoughtQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_Dropthought_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadDropthoughtQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head DSCM Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_DSCM_Quota__c}" id="geoHeadDSCMQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadDSCMQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_DSCM_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadDSCMQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head Retina Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_Retina_Quota__c}" id="geoHeadRetinaQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadRetinaQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_Retina_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadRetinaQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Geo Head GeodataFY Quota">
+                        	<apex:inputField value="{!qta.qdet.Geo_Head_GeodataFY_Quota__c}" id="geoHeadGeodataFYQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoHeadGeodataFYQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Geo_Head_GeodataFY_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoHeadGeodataFYQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Product Head Base Quota">
+                        	<apex:inputField value="{!qta.qdet.Product_Head_Base_Quota__c}" id="productHeadBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100">
+                          
+	                        </apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="productHeadBaseQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Product_Head_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="productHeadBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="DJM Product Head Base Quota">
+                        	<apex:inputField value="{!qta.qdet.DJM_Product_Head_Base_Quota__c}" id="djmProductHeadBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="djmProductHeadBaseQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.DJM_Product_Head_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="djmProductHeadBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Asymmetrix Product Head Base Quota">
+                        	<apex:inputField value="{!qta.qdet.Asymmetrix_Product_Head_Base_Quota__c}" id="asymProductHeadBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="asymProductHeadBaseQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Asymmetrix_Product_Head_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="asymProductHeadBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <!-------------------------------------------------------------------------------------------------------------------------------------
+					  This field was used to calculate DT product and DJM performance across all GEO along with its own performance.
+                      But later our discussion we have achieved through filters.Currently these fields are not used 
+
+                      <apex:column headerValue="DT Product Base Quota">
+                        	<apex:inputField value="{!qta.qdet.DT_Product_Base_Quota__c}" id="dtProductBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{!qta.qdet.DT_Product_Base_Quota__c}" id="dtProductBaseQuota_O" rendered="{!isExisting}" styleClass="wd100"></apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="dtProductBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="DSCM Product Base Quota">
+                        	<apex:inputField value="{!qta.qdet.DSCM_Product_Base_Quota__c}" id="dscmProductBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{!qta.qdet.DSCM_Product_Base_Quota__c}" id="dscmProductBaseQuota_O" rendered="{!isExisting}" styleClass="wd100"></apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="dscmProductBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column> 
+                      --------------------------------------------------------------------------------------------------------------------------------------->
+                      
+                      <apex:column headerValue="Sales Manager Quota">
+                        	<apex:inputField value="{!qta.qdet.Sales_Manager_Base_Quota__c}" id="salesManagerQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="salesManagerQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Sales_Manager_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="salesManagerQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="SE-Base Quota">
+                        	<apex:inputField value="{!qta.qdet.Sales_Executive_Base_Quota__c}" id="seBaseQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="seBaseQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Sales_Executive_Base_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="seBaseQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="COE Quota">
+                        	<apex:inputField value="{!qta.qdet.COE_Target__c}" id="coeQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="coeQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.COE_Target__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="coeQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="IP Quota">
+                        	<apex:inputField value="{!qta.qdet.Huringa_Target__c}" id="ipQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="ipQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Huringa_Target__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="ipQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <!---------------------------------------------- Separate product quota ---------------------------------------------------------->
+                      <apex:column headerValue="Asymmetrix">
+                        	<apex:inputField value="{!qta.qdet.Asymmetrix_Quota__c}" id="asymmetrix_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="asymmetrix_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Asymmetrix_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="asymmetrix_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="CueTrack">
+                        	<apex:inputField value="{!qta.qdet.Cuetrack_Quota__c}" id="cueTrack_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="cueTrack_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Cuetrack_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="cueTrack_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="CueTrans">
+                        	<apex:inputField value="{!qta.qdet.Cuetrans_Quota__c}" id="cueTrans_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="cueTrans_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Cuetrans_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="cueTrans_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>  
+                      
+                      <apex:column headerValue="FSAP">
+                        	<apex:inputField value="{!qta.qdet.FSAP_Quota__c}" id="FSAP_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="FSAP_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.FSAP_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="FSAP_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column> 
+                      
+                      <apex:column headerValue="Dropthought">
+                        	<apex:inputField value="{!qta.qdet.Dropthought_Quota__c}" id="dropthought_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="dropthought_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Dropthought_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="dropthought_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                       <apex:column headerValue="Pulse">
+                        	<apex:inputField value="{!qta.qdet.Pulse_Quota__c}" id="pulse_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="pulse_O" rendered="{!isExisting}" styleClass="wd100">
+                           		<apex:param value="{!qta.qdet.Pulse_Quota__c}"/>
+                           	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="pulse_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="Retina">
+                        	<apex:inputField value="{!qta.qdet.Retina_Qutoa__c}" id="retina_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}"  id="retina_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Retina_Qutoa__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="retina_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <apex:column headerValue="GeoDataFY">
+                        	<apex:inputField value="{!qta.qdet.GeoDataFY_Quota__c}" id="geoDataFY_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="geoDataFY_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.GeoDataFY_Quota__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="geoDataFY_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>  
+                      
+                      
+                      
+                                            
+                      <!---------------------------------------------- End Separate product quota ---------------------------------------------->
+                      
+                      <apex:column headerValue="Tibco Quota">
+                        	<apex:inputField value="{!qta.qdet.Tibco_Target__c}" id="tibcoQuota_I" rendered="{!isNew}" onkeyup="totalCalculation();" styleClass="wd100"></apex:inputField>
+                            <apex:outputText value="{0,Number,#,###}" id="tibcoQuota_O" rendered="{!isExisting}" styleClass="wd100">
+                          		<apex:param value="{!qta.qdet.Tibco_Target__c}"/>
+                          	</apex:outputText>
+                            <apex:facet name="footer">
+                                <apex:outputText id="gtibcoQuota_T"></apex:outputText>
+                    		</apex:facet>
+                      </apex:column>
+                      
+                      <!---------------------------------------------------End of Requirement -------------------------------------------->
+                     
+                   
+                    <!--<apex:column footerValue="Old Value" rendered="{!isExisting}">
+                          <apex:facet name="footer">
+                           <apex:outputText value="{0,Number,###,###,###,###.##}" id="sumCalc1" style="width:100px;" rendered="{!isExisting}">
+										<apex:param value="{!yearlySum}"/> 
+                           		</apex:outputText>
+                           </apex:facet>
+                      </apex:column> -->
+                  </apex:pageBlockTable>
+            </apex:pageBlock>
+    </apex:form>
+<script>
+    
+    //used to load the function,when the page got refreshed (or) after login of DOM elements
+    window.onload= totalCalculation;
+    
+    //created a own for each loop
+    let forEach = function (array, callback, scope) {
+        for (let i = 0; i < array.length; i++) {
+            callback.call(scope, i, array[i]); // passes back stuff we need
+        }
+    };
+    
+    //ternary operation to find the value either from inputtext or outputtext
+    let arrayValues = function(inputText,outputText) {
+        //it will get the value as an array from DOM elements
+		return document.querySelectorAll("[id*='"+inputText+"']").length==0 ? document.querySelectorAll("[id*='"+outputText+"']") : document.querySelectorAll("[id*='"+inputText+"']"); 
+    }
+    
+    //used to remove the commas in the value 
+    let numberReplaceComma = function (value) {
+        let str = value;
+        return str.replace(/,/g, "");
+    }
+    
+    //used to sum the value inside an array
+    function summation(obj){
+        let sum = 0;
+        forEach(obj,function(index,value){
+            if(value.tagName == 'INPUT'){
+                sum += parseFloat(numberReplaceComma(value.value) || 0);
+            }else{
+                sum += parseFloat(numberReplaceComma(value.innerText) || 0);
+            }
+        });
+        //Intl.NumberFormat() --> ES6 inbuild function to set the international curreny formate(By default - USD)
+        return new Intl.NumberFormat().format(sum);
+    }
+    
+    //Used to do the column wise summation &It will work,when its invoked   
+    function totalCalculation(){
+        //used to append the summation values in the respective total field(Located in footer of the table)
+        document.querySelectorAll("[id*='quotaAmount_T']")[0].innerHTML 			= ""+summation(arrayValues('quotaAmount_I','quotaAmount_O'));
+        document.querySelectorAll("[id*='businessHeadQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('businessHeadQuota_I','businessHeadQuota_O'));
+        document.querySelectorAll("[id*='geoHeadQuota_T']")[0].innerHTML 			= ""+summation(arrayValues('geoHeadQuota_I','geoHeadQuota_O'));
+        document.querySelectorAll("[id*='geoHeadIPBaseQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadIPBaseQuota_I','geoHeadIPBaseQuota_O'));
+        document.querySelectorAll("[id*='geoHeadTIBCOQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadTIBCOQuota_I','geoHeadTIBCOQuota_O'));
+        document.querySelectorAll("[id*='geoHeadAsymmetrixQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadAsymmetrixQuota_I','geoHeadAsymmetrixQuota_O'));
+        document.querySelectorAll("[id*='geoHeadDropthoughtQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadDropthoughtQuota_I','geoHeadDropthoughtQuota_O'));
+        document.querySelectorAll("[id*='geoHeadDSCMQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadDSCMQuota_I','geoHeadDSCMQuota_O'));
+        document.querySelectorAll("[id*='geoHeadRetinaQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadRetinaQuota_I','geoHeadRetinaQuota_O'));
+        document.querySelectorAll("[id*='geoHeadGeodataFYQuota_T']")[0].innerHTML 		= ""+summation(arrayValues('geoHeadGeodataFYQuota_I','geoHeadGeodataFYQuota_O'));
+        document.querySelectorAll("[id*='productHeadBaseQuota_T']")[0].innerHTML	= ""+summation(arrayValues('productHeadBaseQuota_I','productHeadBaseQuota_O'));
+        document.querySelectorAll("[id*='djmProductHeadBaseQuota_T']")[0].innerHTML	= ""+summation(arrayValues('djmProductHeadBaseQuota_I','djmProductHeadBaseQuota_O'));
+		document.querySelectorAll("[id*='asymProductHeadBaseQuota_T']")[0].innerHTML= ""+summation(arrayValues('asymProductHeadBaseQuota_I','asymProductHeadBaseQuota_O'));
+      //document.querySelectorAll("[id*='dtProductBaseQuota_T']")[0].innerHTML		= ""+summation(arrayValues('dtProductBaseQuota_I','dtProductBaseQuota_O'));
+      //document.querySelectorAll("[id*='dscmProductBaseQuota_T']")[0].innerHTML	= ""+summation(arrayValues('dscmProductBaseQuota_I','dscmProductBaseQuota_O'));
+        document.querySelectorAll("[id*='salesManagerQuota_T']")[0].innerHTML		= ""+summation(arrayValues('salesManagerQuota_I','salesManagerQuota_O'));
+        document.querySelectorAll("[id*='seBaseQuota_T']")[0].innerHTML				= ""+summation(arrayValues('seBaseQuota_I','seBaseQuota_O'));
+        document.querySelectorAll("[id*='coeQuota_T']")[0].innerHTML				= ""+summation(arrayValues('coeQuota_I','coeQuota_O'));
+        document.querySelectorAll("[id*='ipQuota_T']")[0].innerHTML					= ""+summation(arrayValues('ipQuota_I','ipQuota_O'));
+        document.querySelectorAll("[id*='asymmetrix_T']")[0].innerHTML				= ""+summation(arrayValues('asymmetrix_I','asymmetrix_O'));
+        document.querySelectorAll("[id*='cueTrack_T']")[0].innerHTML				= ""+summation(arrayValues('cueTrack_I','cueTrack_O'));
+        document.querySelectorAll("[id*='cueTrans_T']")[0].innerHTML				= ""+summation(arrayValues('cueTrans_I','cueTrans_O'));
+        document.querySelectorAll("[id*='dropthought_T']")[0].innerHTML				= ""+summation(arrayValues('dropthought_I','dropthought_O'));
+        document.querySelectorAll("[id*='pulse_T']")[0].innerHTML					= ""+summation(arrayValues('pulse_I','pulse_O'));
+        document.querySelectorAll("[id*='retina_T']")[0].innerHTML					= ""+summation(arrayValues('retina_I','retina_O'));
+        document.querySelectorAll("[id*='geoDataFY_T']")[0].innerHTML				= ""+summation(arrayValues('geoDataFY_I','geoDataFY_O'));
+        document.querySelectorAll("[id*='FSAP_T']")[0].innerHTML				= ""+summation(arrayValues('FSAP_I','FSAP_O'));
+        document.querySelectorAll("[id*='tibcoQuota_T']")[0].innerHTML				= ""+summation(arrayValues('tibcoQuota_I','tibcoQuota_O'));
+    }
+    </script>
+</apex:page>

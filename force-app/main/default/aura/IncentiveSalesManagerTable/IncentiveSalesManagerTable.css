@@ -1,0 +1,27 @@
+.THIS#salesManagerTbl h3{
+    color: white;    
+    background-color: #924d4d;
+    border-color: #924d4d;
+}
+.THIS#salesManagerTbl table thead tr th {
+    background-color: #dfcaca;
+}
+.THIS#salesManagerTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #dfcaca;
+}
+.THIS#salesManagerTbl table tbody tr.subTotal td{
+    font-weight: bold;
+    color:#964141;
+    background-color: #f1e9e9;
+}
+.THIS .alterInfo {
+	border: solid 1px #924d4d;
+}
+.THIS .alterInfo span{
+	overflow: visible;
+}
+.THIS .alterInfo h1{
+    color: #752d2d;
+    font-weight: bold;
+}

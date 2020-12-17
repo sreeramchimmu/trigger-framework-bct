@@ -1,0 +1,65 @@
+<apex:page standardcontroller="Opportunity" extensions="OwnChngScrCntrl" id="Page" lightningStylesheets="false" docType="html-5.0" tabStyle="Opportunity">
+    
+            <style>               
+                body .bPageBlock .pbBody .grey .pbSubheader{
+                    background-color:#1798c1;
+                }
+                body .bPageBlock .pbBody .grey .pbSubheader h3{
+                    color:rgb(255, 255, 255);
+                }
+            </style>
+    
+<apex:sectionHeader title="Owner Change" />
+<apex:pageMessages ></apex:pageMessages> 
+  <apex:form id="form1"  >  
+     
+    <apex:PageBlock id="pgb1" >
+        <apex:outputPanel styleClass="grey" layout="block">   
+            <apex:pageBlockSection title="List of Revenues for this Opportunity" columns="1" collapsible="false"> 
+                
+                    <apex:pageBlockSectionItem >                    
+                        <apex:outputLabel value="Current Owner Full Name"></apex:outputLabel>
+                        <!--<apex:outputLabel value="{!oppList[0].Owner_Full_Name__c}"></apex:outputLabel>-->
+                    </apex:pageBlockSectionItem>  
+                      
+                    <apex:pageBlockTable value="{!wrapRevenueTerm}" var="accWrap" id="table"  columnsWidth="100px">                         
+                        <apex:column headerValue="Revenue ID">
+                             <apex:outputLink target="_blank" value="/{!accWrap.Id}">{!accWrap.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column value="{!accWrap.Revenue_Date__c}" />
+                        <apex:column value="{!accWrap.Percentage__c}" />
+                        <apex:column value="{!accWrap.Revenue_Owner__c}" /> 
+                    </apex:pageBlockTable> 
+                
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        
+        <apex:outputPanel styleClass="grey" layout="block">
+            <apex:pageBlockSection title="STEP 1 : Select Revenues of who's owner is to be changed" columns="1" collapsible="false" id="pgs1">     
+                             
+                    <apex:panelGrid columns="2">                        
+                            <h3> From Date : </h3><apex:input type="date"  value="{!fromDate}"  id="fromDate" />
+                            <h3> To Date : </h3><apex:input type="date" value="{!toDate}" id="toDate" />
+                        
+                        <apex:commandButton value="Fetch Records" id="fetchButton" action="{!getRecords}" />                                          
+                    </apex:panelGrid>
+                
+                        <apex:pageBlockTable value="{!revList}" var="s" id="table3"  rendered="{!showfetchtable}" >
+                            <apex:column headerValue="{!if(revList!=null&&revList.size > 0,'Revenue ID','No records to Display')}">
+                                <apex:outputLink target="_blank" value="/{!s.Id}">{!s.Name}</apex:outputLink>
+                            </apex:column>
+                            <apex:column headerValue="{!if(revList!=null&&revList.size > 0,'Revenue Date','No records to Display')}" value="{!s.Revenue_Date__c}"/>
+                        </apex:pageBlockTable> 
+                    
+            </apex:pageBlockSection> 
+        </apex:outputPanel>
+
+        <apex:pageBlockButtons >             
+            <apex:commandButton value="Back" id="backButton" action="{!back}" immediate="true"/>
+            <apex:commandButton value="Reset" id="resetButton" action="{!reset}"/>
+            <apex:commandButton value="Next" id="saveButton" action="{!next}" disabled="{!If(revList!=NULL, false, true )}"/>                      
+        </apex:pageBlockButtons>
+    
+    </apex:PageBlock>
+ </apex:form>   
+</apex:page>

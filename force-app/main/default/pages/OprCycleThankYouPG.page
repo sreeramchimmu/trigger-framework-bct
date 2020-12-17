@@ -1,0 +1,8 @@
+<apex:page standardController="Revenue_Term__c">
+<script>
+ if({!Revenue_Term__c.OppCycleStatus__c} > 0   )
+  {
+          alert("Thank you for completing full sales process....!!!");
+  }
+ </script>
+</apex:page>

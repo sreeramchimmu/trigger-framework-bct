@@ -1,0 +1,168 @@
+<apex:page standardController="Opportunity_Line_Item__c" extensions="SplitBillingTerm" id="btpg" showHeader="true" >
+      <apex:sectionHeader title="Amount will be splitted as per Split Days Define"/>
+    
+     <style>
+                    	table tr td{
+                    	padding:0px !important;
+                    		}
+                      	table tr:nth-child(even) {
+                            background-color: #eee;
+                        }
+                        table tr:nth-child(odd) {
+                            background-color: #fff;
+                        }
+                         th {
+                           
+                            background-color:  #f2f3f3 ;
+        					border:10px;
+                            color: #000;
+                            font-size: 0.9em;
+                            font-weight: bold;
+                            padding: 5px 2px 4px 5px;
+                			}
+        					 td {
+                                padding: 5px;
+                                text-align: left;
+                      			}
+                            table {
+                            border-collapse: separate;
+                            border-spacing: 5px;
+        					
+                            }
+        					tr:hover {background-color: #f00}
+                           
+        					
+                                
+			</style> 
+    <apex:form id="fm1">
+         <apex:pageMessages />
+        <apex:pageBlock >
+            <apex:pageBlockButtons >
+            <apex:commandbutton value="Add" action="{!Add}" rerender="pb1"/>
+            <apex:commandbutton value="Save" action="{!SaveAccount}"/>
+            <apex:commandbutton value="Cancel" action="{!navback}" Immediate="true" />
+            
+        	</apex:pageBlockButtons>
+        	
+             <apex:pageblock id="pb1">
+                 
+                 <apex:variable value="0" var="sumVal"/>
+                  <table>
+                     <th>
+                          Opportunity Line Stage
+                     </th>
+					<th>
+                        Opportunity Funnel Code
+                     </th>
+                    <th>
+                        Amount Available
+                     </th>
+                     <tr>
+                      	<td><apex:outputText value="{!oppLineStage}"></apex:outputText></td>
+                         <td><apex:outputText value="{!oppStageCode}"/></td>
+                         <td><apex:outputText value="{!balanceAmt}"></apex:outputText></td>
+                      </tr>
+                      <tr></tr>
+                      <tr></tr>
+                 </table>
+                 
+                <table>
+                     <th>
+                        
+                        Action
+                     </th>
+					<th>
+                        Milestone
+                     </th>
+                    <th> 
+                        Billing Date
+                     </th>
+                     <th> 
+                        Milestone Basis
+                     </th>
+                    <th>
+                        Milestone Amount
+                     </th>
+                    <th width="100px">
+                        Amount
+                     </th> 
+                     <th>
+                        COGS BCTPL
+                     </th> 
+                     <th>
+                        COGS Others
+                     </th>
+                     <th>
+                        Gross Margin
+                     </th> 
+                    
+                    
+					<apex:repeat value="{!innerRwlst}" var="rg" id="repeatGroup">
+                   <tr>
+                       <td> 
+                        <apex:commandLink value="Remove" action="{!delMilestone}" Immediate="true" rerender="fm1" style="color:#015ba7; font-weight: normal;">
+                        <apex:param name="rowToBeDeleted" value="{!rg.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+                        </apex:commandLink>
+                       
+                       </td>
+                       <td> <apex:inputField value="{!rg.bt.Milestone__c}"  style="width:200px" /></td>
+                       <td><apex:inputField Value="{!rg.bt.Billing_Date__c}"/></td>
+                       
+                       <td><apex:inputField Value="{!rg.bt.Milestone_Basis__c}" rendered="{!If(rg.bt.Opportunity_line_item_id__r.Total_Value__c == rg.bt.Opportunity_line_item_id__r.Billing_Term_Balance_amount__c, true, false)}" > 
+                            <apex:actionSupport event="onchange" reRender="calcBillTermAmt,sumCalc,balCalc,grossMargin,cogsbctpl"/> 
+                           </apex:inputField> 
+                     	</td> 
+                 		
+                       <td><apex:inputField Value="{!rg.bt.Percentage__c}">
+                          	 <apex:actionSupport event="onkeyup" reRender="calcBillTermAmt,sumCalc,balCalc,cogsbctpl,grossMargin" />
+                             <apex:actionSupport event="onblur" reRender="calcBillTermAmt,sumCalc,balCalc,cogsbctpl,grossMargin" />
+                        </apex:inputField></td>
+                       
+                       
+                       <td><apex:outputText Value="{!rg.bt.CurrencyIsoCode}" id="currency1" style="width:200px" >
+                             </apex:outputText>&nbsp;
+                           <apex:outputText Value="{!If(rg.bt.Milestone_Basis__c == '%', (rg.bt.Calculated_Amount__c * (rg.bt.Percentage__c /100)), rg.bt.Percentage__c ) }" id="calcBillTermAmt" style="width:200px" >
+                             </apex:outputText>
+                         <apex:variable var="sumVal" value="{!VALUE(sumVal) + If(rg.bt.Milestone_Basis__c == '%', (rg.bt.Calculated_Amount__c * (rg.bt.Percentage__c /100)), rg.bt.Percentage__c )}"/>
+        				  
+                       </td>
+                       
+                       <td><apex:outputText Value="{!rg.bt.CurrencyIsoCode}" id="currency2" style="width:200px" >
+                             </apex:outputText>&nbsp;
+                           <apex:outputText Value="{!if(rg.bt.Milestone_Basis__c == '%',(rg.bt.Calculated_Amount__c * rg.bt.Percentage__c /100) * cogspercentage /100, rg.bt.Percentage__c * cogspercentage/100 )}" id="cogsbctpl" style="width:200px" >
+                             </apex:outputText>
+                        
+        				  
+                       </td>
+                       <td></td>
+                       <td><apex:outputText Value="{!rg.bt.CurrencyIsoCode}" id="currency3" style="width:200px" >
+                             </apex:outputText>&nbsp;
+                           <apex:outputText Value="{!if(rg.bt.Milestone_Basis__c == '%', (rg.bt.Calculated_Amount__c * rg.bt.Percentage__c /100) * cogspercentage /100, rg.bt.Percentage__c * (100 - cogspercentage)/100 )}" 
+                                            id="grossMargin" style="width:200px" >
+                             </apex:outputText>
+                        
+        				  
+                       </td>
+                       
+                       
+                        </tr>
+               </apex:repeat>
+                     <tr>
+                     <td  width="100"></td><td width="100"></td><td width="150"></td><td width="50"></td><td width="50"></td>
+                         
+                         <td> Total : <apex:outputText id="sumCalc" value="{0, number, #####.##}" >
+                             
+                             <apex:param value="{!VALUE(sumVal)}" />
+                             
+                             </apex:outputText>
+                             <br/>Available : <apex:outputText id="balCalc" value="{0, number, #####.##}" >
+                             <apex:param value="{!balanceAmt - VALUE(sumVal)}" />
+                             </apex:outputText>
+                         </td>
+                          
+                     </tr>
+                 </table>
+            </apex:pageblock>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

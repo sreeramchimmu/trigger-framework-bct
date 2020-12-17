@@ -1,0 +1,8 @@
+<apex:page standardController="Opportunity_Line_Item__c">
+<script>
+ if({!Opportunity_Line_Item__c.OppCycleStatus__c} > 0   )
+  {
+          alert("Opportunity line item has been created / updated. Please also enter corresponding Billing & Revenue details.");
+  }
+ </script>
+</apex:page>

@@ -1,0 +1,53 @@
+<apex:page controller="QuotaMasterController" >
+     <style>
+        .pbBottomButtons {
+        background:  #f0f2f3  !important
+        }
+    .tableStyle {
+        background:#f0f2f3;
+        border-radius:5px;
+        border:1px solid #ccc;
+        margin-left:200px;
+        }
+         .tableStyle tr{
+        border-collapse:collapse;
+        border-bottom:1px solid #ccc;
+        line-height:20px;
+        }
+        
+    </style> 
+    
+    
+    
+     <apex:form >
+           <apex:pageMessages />
+    	   <apex:pageblock id="pb1">
+               <apex:panelGrid columns="2"  styleClass="tableStyle">
+                   
+                   <apex:panelGrid title="pgrd3" width="200"  >
+                        <apex:facet name="header">Quota Owner</apex:facet>
+                     </apex:panelGrid>
+                    <apex:panelGrid title="pgrd2" width="200" >
+                        <apex:selectList value="{!repId}" size="1">
+                         <apex:selectOptions value="{!Reportees}"/>
+                         </apex:selectList>
+                     </apex:panelGrid>
+                  
+                    <apex:panelGrid title="pgrd3" width="200"  >
+                        <apex:facet name="header">Quota period</apex:facet>
+                     </apex:panelGrid>
+                    <apex:panelGrid title="pgrd3" width="200" >
+                       <apex:selectList value="{!fiscalYear}" size="1" required="true" >
+                         <apex:selectOptions value="{!items}"/>
+                         </apex:selectList>
+                     </apex:panelGrid>
+               </apex:panelGrid>
+                <apex:pageBlockButtons >
+                    
+                    <apex:commandbutton value="Set / Fetch Quota" action="{!setOrFetchQuota}" reRender="resTab"/>
+                   <!-- <apex:commandbutton value="Fetch QVA" action="{!retrieveQVA}" reRender="resTab" /> -->
+        	</apex:pageBlockButtons>
+        </apex:pageblock>
+     </apex:form>
+    
+</apex:page>

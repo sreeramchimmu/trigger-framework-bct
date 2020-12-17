@@ -1,0 +1,54 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="IncentiveEarningsDataFetchController" >
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+    <aura:attribute name="incentives" type="map" />
+    <aura:if isTrue="{!not(empty(v.incentives))}">
+        <div class="slds-box slds-m-vertical_x-small" id="actualTbl">
+            <h3 class="slds-section-title--divider title">Revenue Classification by Incentive Qualifier</h3>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col"><div class="slds-truncate ">Incentive Qualifiers</div></th>
+                        <th scope="col"><div class="slds-truncate">Q1</div></th>
+                        <th scope="col"><div class="slds-truncate">Q2</div></th>
+                        <th scope="col"><div class="slds-truncate">Q3</div></th>
+                        <th scope="col"><div class="slds-truncate">Q4</div></th>
+                        <th scope="col"><div class="slds-truncate">Total ({!v.incentives.RevenueSplit[0].CurrencyIsoCode})</div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.incentives.RevenueSplit}" var ="x" indexVar="i">
+                        <tr class="slds-hint-parent">
+                            <td>
+                                <div class="slds-truncate">
+                                    <aura:if isTrue="{!v.incentives.RevenueSplit.length!=i+1}">
+                                    	{!x.Incentive_Qualifier__c}
+                                        <aura:set attribute="else">
+                                        	{!x.Team_Member_Name__c}
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </td>
+                            <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q1__c}"/></div></td>
+                            <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q2__c}"/></div></td>
+                            <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q3__c}"/></div></td>
+                            <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q4__c}"/></div></td>
+                            <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.QuarterSum__c}"/></div></td>
+                        </tr>
+                    </aura:iteration>                            
+                </tbody>
+            </table>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!empty(v.incentives)}">
+        <div class="alterInfo">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture"> 
+                <span class="record-avatar-container slds-avatar slds-avatar_small icon slds-m-right_small">
+                    <lightning:icon iconName="utility:warning" />
+                </span>
+                <h1>
+                    This opportunity neither meets the criteria  of New Incentives nor the Carry Forward incentives. Please ensure that you have selected the correct option in the " Business Category - Opportunity " field.
+                </h1>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

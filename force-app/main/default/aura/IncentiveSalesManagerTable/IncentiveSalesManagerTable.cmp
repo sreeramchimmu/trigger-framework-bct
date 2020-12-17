@@ -1,0 +1,71 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="IncentiveEarningsDataFetchController" >
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+    <aura:attribute name="incentives" type="map" />
+    <aura:if isTrue="{!not(empty(v.incentives))}">
+        <div class="slds-box slds-m-vertical_x-small" id="salesManagerTbl">
+            <h3 class="slds-section-title--divider title">Sales Manager - Total Incentive Earnings</h3>
+            <aura:if isTrue="{!v.incentives.SalesManager[0].QuarterSum__c!=0}">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate">User</div></th>
+                            <th scope="col"><div class="slds-truncate">Incentive Qualifiers</div></th>
+                            <th scope="col"><div class="slds-truncate">Q1</div></th>
+                            <th scope="col"><div class="slds-truncate">Q2</div></th>
+                            <th scope="col"><div class="slds-truncate">Q3</div></th>
+                            <th scope="col"><div class="slds-truncate">Q4</div></th>
+                            <th scope="col"><div class="slds-truncate">Total ({!v.incentives.SalesManager[0].CurrencyIsoCode})</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.incentives.SalesManager}" var ="x" indexVar="i">
+                            <aura:if isTrue="{!x.Is_CFI__c!='subTotal'}">
+                                <tr class="slds-hint-parent">
+                                    <aura:if isTrue="{!x.colSpan!=''}">
+                                        <td rowspan="{!x.colSpan}">
+                                            <div class="slds-truncate" >
+                                                {!x.Team_Member_Name__c}  
+                                            </div>
+                                        </td>
+                                        <aura:set attribute="else">
+                                            <td style="display:none"></td>
+                                        </aura:set>
+                                    </aura:if>
+                                    <td><div class="slds-truncate">{!x.Incentive_Qualifier__c}</div></td>
+                                    <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q1__c}"/></div></td>
+                                    <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q2__c}"/></div></td>
+                                    <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q3__c}"/></div></td>
+                                    <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q4__c}"/></div></td>
+                                    <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.QuarterSum__c}"/></div></td>
+                                </tr>
+                            </aura:if>
+                            <aura:if isTrue="{!and(x.Is_CFI__c=='subTotal',x.userCount>1)}">
+                                <aura:if isTrue="{!x.colSpan>1}">
+                                    <tr class="slds-hint-parent subTotal">
+                                        <td><div class="slds-truncate">Sub Total</div></td>
+                                        <td><div class="slds-truncate"></div></td>
+                                        <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q1__c}"/></div></td>
+                                        <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q2__c}"/></div></td>
+                                        <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q3__c}"/></div></td>
+                                        <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.Q4__c}"/></div></td>
+                                        <td><div class="slds-truncate"><lightning:formattedNumber maximumFractionDigits="2" value="{!x.QuarterSum__c}"/></div></td>
+                                    </tr>
+                                </aura:if>
+                            </aura:if>
+                        </aura:iteration>                            
+                    </tbody>
+                </table>
+                <aura:set attribute="else">
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture alterInfo">
+                        <span class="record-avatar-container slds-avatar slds-avatar_small icon slds-m-right_small">
+                            <lightning:icon iconName="utility:warning" />
+                        </span>
+                        <h1>
+                            No Sales Manager incentives applicable for this opportunity. In case of Sales Manager involvement, please tag the Sales Manager user under "Opportunity team"
+                        </h1>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

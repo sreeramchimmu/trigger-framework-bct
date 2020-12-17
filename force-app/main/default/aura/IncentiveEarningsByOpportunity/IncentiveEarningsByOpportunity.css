@@ -1,0 +1,48 @@
+.THIS#salesTbl h3{
+    color: white;
+    background-color: #4d6892;
+    border-color: #4d6892;
+}
+.THIS#salesTbl table thead tr th {
+    background-color: #d3dce8;
+}
+.THIS#salesTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #ebeef3;
+}
+.THIS#salesManagerTbl h3{
+    color: white;    
+    background-color: #924d4d;
+    border-color: #924d4d;
+}
+.THIS#salesManagerTbl table thead tr th {
+    background-color: #dfcaca;
+}
+.THIS#salesManagerTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #f1e9e9;
+}
+.THIS#preSalesTbl h3{
+    color: white;    
+    background-color: #40bdaf;
+    border-color: #40bdaf;
+}
+.THIS#preSalesTbl table thead tr th {
+    background-color: #cbede9;
+}
+.THIS#preSalesTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #ebf8f7;
+}
+.THIS#actualTbl h3{
+    color: white;    
+    background-color: #6cb544;
+    border-color: #6cb544;
+}
+.THIS#actualTbl table thead tr th {
+    background-color: #c1e0b1;
+}
+.THIS#actualTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #def2d3;
+}

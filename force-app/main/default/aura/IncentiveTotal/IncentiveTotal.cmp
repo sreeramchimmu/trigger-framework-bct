@@ -1,0 +1,59 @@
+<aura:component implements="force:hasRecordId,force:hasSObjectName,flexipage:availableForRecordHome" access="public" controller = "IncentiveEarningsTotalController">
+    <aura:attribute name="incentive" type="list"/>
+    <aura:attribute name="listSize" type="Integer"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+        <div class="slds-media slds-media--center slds-has-flexi-truncate">
+            <div class="slds-grid incColor">
+                <span class="record-avatar-container slds-avatar slds-avatar_medium icon slds-m-right_small">
+                    <lightning:icon iconName="custom:custom41" title="Incentive" />
+                </span>
+                <div class="slds-media__body">
+                    <h1>
+                        <aura:if isTrue="{!not(empty(v.incentive))}">
+                            <aura:iteration items="{!v.incentive}" var ="x">
+                                <span name="primaryField" class="slds-page-header__title slds-m-right--small slds-align-middle fade-text">
+                                    <span>
+                                        <aura:if isTrue="{!x.Is_CFI__c=='Y'}"> 
+                                            Carry Forward Incentive
+                                            <aura:set attribute="else">
+                                                New Incentive
+                                            </aura:set>
+                                        </aura:if>
+                                    </span>
+                                </span>
+                                <div class="entityNameTitle slds-line-height--reset">
+                                    <span class="slds-m-right--small">
+                                        {!x.CurrencyIsoCode}
+                                        <span class="slds-m-left_xxx-small">
+                                            <lightning:formattedNumber maximumFractionDigits="0" value="{!x.SE_Incentives__c}"/>
+                                        </span>
+                                        <span class="slds-m-left_xxx-small">
+                                            <aura:if isTrue="{!x.CurrencyIsoCode!='USD'}">
+                                                (USD <lightning:formattedNumber class="slds-m-left_xxx-small" maximumFractionDigits="0" value="{!x.convertedToUSD__c}"/>)
+                                            </aura:if>
+                                        </span>                               
+                                    </span>
+                                </div>
+                            </aura:iteration>
+                        </aura:if>
+                        <aura:if isTrue="{!empty(v.incentive)}">
+                            <span name="primaryField" class="slds-page-header__title slds-m-right--small slds-align-middle fade-text">
+                            	Incentives 
+                            </span>
+                            <div class="entityNameTitle slds-line-height--reset">
+                                <span class="slds-m-right--small">
+                                	Nil
+                                </span>
+                            </div>
+                        </aura:if>
+                    </h1>
+                </div>
+            </div>
+        </div>
+</aura:component>
+
+<!---
+<div class="slds-grid">
+  <div class="slds-col"> Component HERE</div>
+  <div class="slds-col"> Text HERE </div>
+</div> -->

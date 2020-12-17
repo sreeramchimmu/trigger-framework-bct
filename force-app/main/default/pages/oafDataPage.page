@@ -1,0 +1,225 @@
+<apex:page standardController="Opportunity" extensions="oafDataController" renderAs="PDF" sidebar="false" showHeader="false"> 
+<!--apex:page standardController="Opportunity" extensions="oafDataController" renderAs="PDF" sidebar="false" showHeader="true"  title="{!Opportunity.Name}" cache="false"--> 
+ <style>
+	 .custom1
+     {
+      text-align:right;
+	 }
+     .custom2
+     {
+      text-align:center;
+     }
+     .headerfontstyle
+     {
+       font-size:12px !important;
+     } 
+ </style>
+    
+ <apex:image id="theImage" value="{!$Resource.BCTLogo}" width="100" height="110" style="float:right;"/>
+ <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>   
+ <apex:sectionHeader title="BCT Order Acknowledgement Form"/>  
+  <apex:form > 
+  <apex:pageBlock id="block">
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+   <apex:pageBlockSection columns="1" title=" " collapsible="false">
+        <!--apex:pageBlockTable value="{!opmlst}" var="opd" id="table1" width="720" cellpadding="4" border="3">
+        </apex:pageBlockTable-->  
+        <apex:pageBlockTable value="{!opmlst}" var="opd"  width="720" cellpadding="0" border="1">
+        <apex:column value="Opp No.:{!opd.Opportunity_number_new__c}" width="300"/>
+        <apex:column value="Date :{!now()}" width="200"/>
+        <apex:column value="OAF Created By :{!$User.FirstName} {!$User.LastName}" width="270"/>
+        </apex:pageBlockTable>   
+       <apex:pageBlockTable value="{!opmlst}" var="opd" width="720" cellpadding="4"  border="3">
+       </apex:pageBlockTable>       
+   </apex:pageBlockSection>
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+   <apex:outputPanel layout="block"> 
+   <apex:pageBlockSection columns="1" title="PROJECT DETAILS" collapsible="false">
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2" width="720" cellpadding="1" border="1">
+      <!--apex:column   <font size="20" color="red"> <b> "Your text here" </b> </font-->
+        <apex:column value="Project Name :{!opd.name}" style="font-size: 18px;"/>    
+    </apex:pageBlockTable>      
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2-1" width="720" cellpadding="1" border="1" cellspacing="0">
+      <apex:column value="Client Name :{!opd.account.name}"/>
+      <apex:column value="Vertical :{!opd.account.industry}" width="300"/> 
+    </apex:pageBlockTable>   
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2-2" width="720" cellpadding="0" border="1">         
+      <apex:column value="Address :{!opd.account.BillingStreet}, {!opd.account.billingCity}, {!opd.account.BillingState}, {!opd.account.BillingCountry}, {!opd.account.BillingPostalCode}"/>
+    </apex:pageBlockTable>      
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2-3" width="720" cellpadding="1" border="1" cellspacing="1">    
+      <apex:column value="Sales Owner :{!opd.owner.name}"/> 
+      <apex:column value="Project Manager :{!opd.Project_Manager__c}" width="300"/>     
+    </apex:pageBlockTable>      
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2-5" width="720" cellpadding="0" border="1">
+       <apex:column value="Project From  :{!opd.PROJECT_START_DATE__c} "/>  
+        <!--apex:column title="" width="20" /--> 
+       <apex:column value="Project To :{!opd.PROJECT_END_DATE__c}" width="300"/>    
+    </apex:pageBlockTable>
+    <apex:pageBlockTable value="{!opmlst}" var="opd" id="table2-6" width="720" cellpadding="1" border="1" cellspacing="0">
+      <apex:column value="{!opd.CONTRACT_PO_NUMBER__c}" headervalue="PO Number" headerClass="custom1"/>   
+      <apex:column value="{!opd.CONTRACT_PO_SIGN_DATE__c}" headervalue="PO Date" headerClass="custom1"/> 
+      <!--apex:column headerValue="PO Amount" headerClass="custom1" width="50%"--> 
+      <apex:column headerValue="PO Amount" headerClass="custom1"> 
+          <apex:outputText value="{!opd.CurrencyIsoCode}{0, number, ###,##0}" style="text-align:right;"> 
+              <apex:param value="{!opd.amount}"/>
+          </apex:outputText>
+      </apex:column>
+      <apex:column headervalue="COGS BCTPL">
+           <apex:outputText value="{!opd.CurrencyIsoCode}{0, number, ###,##0}">
+              <apex:param value="{!opd.Total_COGS_BCTPL_Opp__c}"/>
+          </apex:outputText>
+      </apex:column>  
+      <apex:column headervalue="COGS Others">
+               <apex:outputText value="{!opd.CurrencyIsoCode}{0, number, ###,##0}"> 
+              <apex:param value="{!opd.Total_COGS_Others_Opp__c}"  />
+          </apex:outputText>
+      </apex:column>    
+      <apex:column headervalue="Gross Margin">
+            <apex:outputText value="{!opd.CurrencyIsoCode}{0, number, ###,##0}">
+              <apex:param value="{!opd.Total_Gross_Margin__c}"/>
+          </apex:outputText>
+      </apex:column>  
+      <apex:column headervalue="Gross Margin[%]">
+          <apex:outputText value="{0, number, ###,##0}">
+              <apex:param value="{!opd.Total_Gross_Margin_Percent__c}"/>
+          </apex:outputText>
+      </apex:column> 
+    </apex:pageBlockTable>    
+    <apex:pageBlockTable value="{!opmlst}" var="opd" width="720" cellpadding="4"  border="3"> 
+    </apex:pageBlockTable>    
+   </apex:pageBlockSection>
+  </apex:outputPanel>
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+    <apex:pageBlockSection columns="6" title="OPPORTUNITY LINE BREAKUP" collapsible="false">
+     <apex:pageBlockTable value="{!opplinelst}" var="opl" id="table6" width="720" cellpadding="2" border="3">
+     <!--apex:pageBlockTable value="{!opplinelst}" var="opl"-->
+       <apex:column value="{!opl.Practice__c}" headerValue="Practice" style="text-align: left;width:15%" headerClass="custom1"/>
+       <apex:column value="{!opl.Revenue_Stream__c}" headerValue="Revenue Stream" style="text-align:left;width:20%" headerClass="custom1">
+       	<apex:facet name="footer"><hr noshade="noshade" width="8%" align="right"/>Total :</apex:facet>
+       </apex:column>  
+       <apex:column headerValue="Total Value" style="text-align:right;width:15%;">
+           <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;">
+              <apex:param value="{!opl.Total_Value__c}"/>
+          </apex:outputText>
+          <apex:facet name="footer">
+            <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;"><hr noshade="noshade"/>
+        		<apex:param value="{!mTotal_value}"/>
+    		</apex:outputText>
+          </apex:facet>           
+       </apex:column>
+       <!--apex:column value="{!opl.COGS_BCTPL__c}" headerValue="COGS BCTPL" style="text-align: left;width:15%" headerClass="custom1">
+       	  <apex:facet name="footer"><hr noshade="noshade" width="15%" align="right"/>{!mCurrencyIsoCode}&nbsp;{!mCogs_Bctpl}</apex:facet>
+       </apex:column-->  
+       <apex:column headerValue="COGS BCTPL" style="text-align:right;width:15%;">
+           <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;">
+              <!--apex:param value="{!opl.COGS_BCTPL__c}"/-->
+               <apex:param value="{!IF(isNull(opl.COGS_BCTPL__c),0,opl.COGS_BCTPL__c)}"/>
+          </apex:outputText>
+          <apex:facet name="footer">
+            <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;"><hr noshade="noshade"/>
+        		<apex:param value="{!mCogs_Bctpl}"/>
+    		</apex:outputText>
+          </apex:facet>           
+       </apex:column>
+       <!--apex:column value="{!opl.COGS_Others__c}" headerValue="COGS Others" style="text-align: left;width:15%" headerClass="custom1">  
+         <apex:facet name="footer"><hr noshade="noshade" width="18%" align="right"/>{!mCurrencyIsoCode}&nbsp;{!mCogs_Others}</apex:facet>
+       </apex:column-->  
+         <apex:column headerValue="COGS Others" style="text-align:right;width:15%;">
+           <apex:outputText value="{!mCurrencyIsoCode} {0, number, ###,##0}" style="float:right;">
+               <apex:param value="{!IF(isNull(opl.COGS_Others__c),0,opl.COGS_Others__c)}"/>
+          </apex:outputText>
+          <apex:facet name="footer">
+            <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;"><hr noshade="noshade"/>
+        		<apex:param value="{!mCogs_Others}"/>
+    		</apex:outputText>
+          </apex:facet>           
+       </apex:column>  
+       <apex:column headerValue="Gross Margin" style="text-align:right;width:15%;">
+           <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;">
+              <!--apex:param value="{!opl.Geo_Margin__c}"/-->
+              <apex:param value="{!IF(isNull(opl.Geo_Margin__c),0,opl.Geo_Margin__c)}"/>
+          </apex:outputText>
+          <apex:facet name="footer">
+            <apex:outputText value="{!mCurrencyIsoCode}{0, number, ###,##0}" style="float:right;"><hr noshade="noshade"/>
+        		<apex:param value="{!mGeo_Margin}" />
+    		</apex:outputText>
+          </apex:facet>           
+       </apex:column>
+        <apex:column headerValue="Gross Margin[%]"style="text-align:center;width:15%;">
+          <apex:outputText value="{0, number, ###,##0}">
+            <apex:param value="{!IF(isNull(opl.Total_GEO_Margin__c),0,opl.Total_GEO_Margin__c)}" />  
+          </apex:outputText> 
+           <!--apex:facet name="footer">
+            <apex:outputText value="" style="float:right;"><hr noshade="noshade"/>
+        		<apex:param value="" />
+    		</apex:outputText>
+          </apex:facet-->  
+       </apex:column>
+        <!--apex:column width="40%"/-->
+     </apex:pageBlockTable> 
+   </apex:pageBlockSection>
+   <!--apex:pageBlockSection columns="1">  
+      <apex:pageBlockTable value="{!opmlst}" var="opd" id="table6" width="720" cellpadding="2" border="3"> 
+          <apex:column value="LINE TOTAL :{!opd.CurrencyIsoCode}"  width="150"  />
+          <apex:column value="{!opd.CurrencyIsoCode}{!opd.Line_Balance_Amount__c}" width="8"  />
+          <apex:column value="{!opd.CurrencyIsoCode}{!opd.Total_COGS_BCTPL_Opp__c}" width="8"/>
+        <apex:column value="{!opd.CurrencyIsoCode}{!opd.Total_COGS_Others_Opp__c}" width="8"/>
+        <apex:column value="{!opd.CurrencyIsoCode}{!opd.Total_Geo_margin_Opp__c}" width="8"/>
+      </apex:pageBlockTable>
+    </apex:pageBlockSection-->
+    <apex:pageBlockSection columns="1">         
+     <apex:pageBlockTable value="{!opmlst}" var="opd" id="table6-1" width="720" cellpadding="4"  border="3">
+     </apex:pageBlockTable> 
+    </apex:pageBlockSection>  
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>    
+   <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+   <!--apex:pageBlockSection columns="6" title="REVENUE BREAKUP">
+     <apex:pageBlockTable value="{!RevenueLst}" var="rev" id="table7" width="720" cellpadding="2" border="3">
+          <apex:column value="{!rev.Milestone__c}" headerValue="Milestone Name (Related Task)"/>
+          <apex:column value="{!rev.opportunity_line_item_id__r.Practice__c}" headerValue="Practice"/>
+          <apex:column value="{!rev.opportunity_line_item_id__r.Revenue_Stream__c}" headerValue="Rev Stream"/> 
+          <apex:column value="{!rev.Revenue_Date__c}" headerValue="Date"/> 
+          <apex:column value="{!rev.Milestone_Amount__c}" headerValue="  Amount" style="text-align: right;width:15%" headerClass="custom1"/>
+     </apex:pageBlockTable> 
+   </apex:pageBlockSection>  
+   <apex:pageBlockSection columns="1">  
+      <apex:pageBlockTable value="{!opmlst}" var="opd" id="table7" width="720" cellpadding="2" border="3"> 
+          <apex:column title="" width="535"/> 
+          <apex:outputtext value="{0, number, integer}"/>
+        <apex:column value="Total:{!opd.CurrencyIsoCode}{!opd.Line_Balance_Amount__c}" style="text-align: right;width:25%" headerClass="custom1"/>
+      </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection >   
+     <apex:pageBlockTable value="{!opmlst}" var="opd" id="table6-1" width="720" cellpadding="0" border="3">
+     </apex:pageBlockTable>
+    </apex:pageBlockSection-->  
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>    
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>    
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>    
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>    
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>  
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>
+    <tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>      
+    <apex:pageBlockSection columns="2">
+      <apex:pageBlockTable value="{!opmlst}" var="opd" id="table8" width="720" cellpadding="0" cellspacing="4" border="0" align="center">
+        <!--apex:facet name="footer"-->  
+        <!--apex:outputText value="BDM  &NBSP &NBSP &NBSP &NBSP &NBSP &NBSP     AVP-Corporate       CEO          FC"  style="float: right;"/-->
+       <apex:column value="{!opd.SALES_CHANNEL__c}" headerValue="BDM" style="text-align: right;width:25%" headerClass="custom1"/>
+       <apex:column value="{!opd.SALES_CHANNEL__c}" headerValue="GEO HEAD" style="text-align: right;width:25%" headerClass="custom1"/>
+       <!--apex:column value="{!opd.SALES_CHANNEL__c}" headerValue="CEO"/>
+       <apex:column value="{!opd.SALES_CHANNEL__c}" headerValue="FC"/-->
+      <!--/apex:facet-->    
+      </apex:pageBlockTable> 
+   </apex:pageBlockSection> 
+   <apex:pageBlockSection >   
+     <apex:pageBlockTable value="{!opmlst}" var="opd" id="table9" width="720" cellpadding="1" border="4">
+     </apex:pageBlockTable>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+</apex:form>
+        
+</apex:page>

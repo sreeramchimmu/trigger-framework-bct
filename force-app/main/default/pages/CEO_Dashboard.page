@@ -1,0 +1,208 @@
+<apex:page controller="CEO_Dashboard" lightningStylesheets="true" docType="html-5.0">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
+    <script type="text/javascript"> 
+    
+    $(document).ready(function() {
+        var r = $("#DTperiod option:selected").val();
+        //alert(r);
+        $(".FromDT").hide();
+        $(".ToDT").hide();
+        
+    });
+    
+    function hideshow(){
+        var r = $("#DTperiod option:selected").val();
+        //alert(r);
+        if(r=="Custom Dt Picker"){
+            $(".FromDT").show();
+            $(".ToDT").show();
+        }
+        else{
+            $(".FromDT").hide();
+            $(".ToDT").hide();
+            }
+    }
+    
+    </script>
+    
+    <apex:form >
+         
+        <apex:outputPanel >
+            <table id="tb">
+                <tr>  
+                    <td><B><apex:outputLabel value="Date Period: "></apex:outputLabel></B></td>
+                    <td id="DTperiod"><apex:selectList id="datePeriod" label="Date Period: " value="{!fromMonth}" multiselect="false"
+                                                       onchange="hideshow();" size="1">
+                        <apex:selectOptions value="{!Quaters}" />
+                        </apex:selectList></td>
+                    
+                    <td style="padding-left:1rem;"><B><apex:outputLabel value="SBU: "></apex:outputLabel></B></td>
+                    <td><apex:selectList label="SBU: " value="{!sbu}" multiselect="true" size="5">
+                        <apex:selectOptions value="{!Regions}" />
+                        </apex:selectList></td>
+                    
+                    <td style="padding-left:1rem;"><B><apex:outputLabel value="BU: "></apex:outputLabel></B></td>
+                    <td><apex:selectList label="BU: " value="{!bu}" multiselect="true" size="5">
+                        <apex:selectOptions value="{!BusinessUnits}" />
+                        </apex:selectList></td>
+                    
+                    <td style="padding-left:1rem;"><B><apex:outputLabel value="Opportunity Owner: "></apex:outputLabel></B></td>
+                    <td><apex:selectList label="Opportunity Owner " value="{!oppOwner}" multiselect="true" size="5">
+                        <apex:selectOptions value="{!opportunityOwners}" />
+                        </apex:selectList></td>
+                </tr>
+                <tr>
+                        <td class="FromDT" style="padding-left:1rem;"><B><apex:outputLabel value="From Date: "></apex:outputLabel></B></td>
+                        <td class="FromDT"><apex:input id="fromDate" type="date" value="{!d1}"/></td>
+                    
+                    <td class="ToDT" style="padding-left:1rem;"><B><apex:outputLabel value="To Date: "></apex:outputLabel></B></td>
+                    <td class="ToDT"><apex:input type="date" value="{!d2}"/></td>
+                    
+                    <td style="padding-left:1rem;"><B><apex:outputLabel value="X-Axis: "></apex:outputLabel></B></td>
+                    <td><apex:selectList label="X-Axis: " value="{!xAxisVal}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!XAxis}" />
+                        </apex:selectList></td>
+                    
+                    <td style="padding-left:1rem;"><apex:commandButton value="Fetch" reRender="charts" /></td>
+                </tr>
+            </table><br/>
+            
+        </apex:outputPanel><br/><br/>
+
+         <apex:outputPanel id="charts">
+             
+             <div id="test" style="display:{!IF(xAxisVal == 'sbu' || xAxisVal == Null, 'block','none')}">
+                         
+           <apex:chart data="{!data}" height="400" width="4000" >
+                
+                <apex:legend position="left" />
+                
+                <apex:axis gridFill="true" type="Numeric" position="left" title="Revenue(USD)" grid="true"
+                           
+                           fields="revenue,quota,L1,L2,L3" minimum="0" >
+                    
+                    <apex:chartLabel />
+                    
+                </apex:axis>
+                
+                <apex:axis gridFill="true" type="Category" position="bottom" fields="sbu" title="SBU">
+                    
+                    <apex:chartLabel font="15px Helvetica, Arial" orientation="horizontal" rotate="270"/>
+                    
+                </apex:axis>
+                
+                <apex:barSeries orientation="vertical" axis="left" colorSet="#EC7063,#85C1E9,#76D7C4,#F9E79F,#C39BD3" tips="true"
+                                
+                                xField="sbu"
+                                
+                                yField="quota,revenue,L1,L2,L3"
+                                
+                                title="Quota,L0-L0X,Wt. Avg. L1,Wt. Avg. L2,Wt. Avg. L3">
+					<apex:chartLabel font="13px Helvetica, Arial" rotate="270" display="insideStart" orientation="vertical" />
+                    <!--<apex:chartLabel field="revenueInMillion" display="outside" orientation="vertical"
+                                     font="10px, Garamond" rotate="315" />-->
+               </apex:barSeries>
+                
+            </apex:chart>  
+                 </div>
+              <div id="test1" style="display:{!IF(xAxisVal == 'mon', 'block','none')}">
+             <apex:chart data="{!data1}" height="300" width="2000">
+                
+                <apex:legend position="left"/>
+                
+                <apex:axis gridFill="true" type="Numeric" position="left" title="Revenue(USD)" grid="true"
+                           
+                           fields="revenue" dashSize="2" minimum="0">
+                    
+                    <apex:chartLabel />
+                    
+                </apex:axis>
+                
+                <apex:axis gridFill="true" type="Category" position="bottom" fields="month" title="Month">
+                    
+                    <apex:chartLabel font="15px Helvetica, Arial" orientation="horizontal" rotate="270"/>
+                    
+                </apex:axis>
+                
+                <apex:barSeries orientation="vertical" axis="left" colorSet="#EC7063,#85C1E9,#76D7C4,#F9E79F,#C39BD3" tips="true"
+                                
+                                xField="month"
+                                
+                                yField="quota,revenue,L1,L2,L3"
+                                
+                                title="Quota,L0-L0X,Wt. Avg. L1,Wt. Avg. L2,Wt. Avg. L3">
+                    <apex:chartLabel font="13px Helvetica, Arial" rotate="270" display="insideStart" orientation="vertical" />
+               </apex:barSeries>
+                
+            </apex:chart> 
+             </div>
+             
+             <div id="bu" style="display:{!IF(xAxisVal == 'bu', 'block','none')}">
+             <apex:chart data="{!data2}" height="450" width="2000">
+                
+                <apex:legend position="left"/>
+                
+                <apex:axis gridFill="true" type="Numeric" position="left" title="Revenue(USD)" grid="true"
+                           
+                           fields="revenue" dashSize="2" minimum="0">
+                    
+                    <apex:chartLabel />
+                    
+                </apex:axis>
+                
+                <apex:axis gridFill="true" type="Category" position="bottom" fields="bu" title="BU">
+                    
+                    <apex:chartLabel font="15px Helvetica, Arial" orientation="horizontal" rotate="270"/>
+                    
+                </apex:axis>
+                
+                <apex:barSeries orientation="vertical" axis="left" colorSet="#EC7063,#85C1E9,#76D7C4,#F9E79F,#C39BD3" tips="true"
+                                
+                                xField="bu"
+                                
+                                yField="quota,revenue,L1,L2,L3"
+                                
+                                title="Quota,L0-L0X,Wt. Avg. L1,Wt. Avg. L2,Wt. Avg. L3">
+                   <apex:chartLabel font="13px Helvetica, Arial" rotate="270" display="insideStart" orientation="vertical" />
+               </apex:barSeries>
+                
+            </apex:chart> 
+             </div>
+             
+             <div id="oppOwner" style="display:{!IF(xAxisVal == 'oppOwner', 'block','none')}">
+             <apex:chart data="{!data3}" height="550" width="8000">
+                
+                <apex:legend position="left"/>
+                
+                <apex:axis gridFill="true" type="Numeric" position="left" title="Revenue(USD)" grid="true"
+                           
+                           fields="revenue" dashSize="2" minimum="0">
+                    
+                    <apex:chartLabel />
+                    
+                </apex:axis>
+                
+                <apex:axis gridFill="true" type="Category" position="bottom" fields="oppOwner" title="Opportunity Owner">
+                    
+                    <apex:chartLabel font="15px Helvetica, Arial" orientation="horizontal" rotate="270"/>
+                    
+                </apex:axis>
+                
+                <apex:barSeries orientation="vertical" axis="left" colorSet="#EC7063,#85C1E9,#76D7C4,#F9E79F,#C39BD3" tips="true"
+                                
+                                xField="oppOwner"
+                                
+                                yField="quota,revenue,L1,L2,L3"
+                                
+                                title="Quota,L0-L0X,Wt. Avg. L1,Wt. Avg. L2,Wt. Avg. L3">
+                    <apex:chartLabel font="13px Helvetica, Arial" rotate="270" display="insideStart" orientation="vertical" />
+               </apex:barSeries>
+                
+            </apex:chart> 
+             </div>
+             
+            </apex:outputPanel>
+    </apex:form>
+</apex:page>

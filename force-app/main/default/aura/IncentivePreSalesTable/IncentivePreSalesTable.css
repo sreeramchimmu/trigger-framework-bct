@@ -1,0 +1,27 @@
+.THIS#preSalesTbl h3{
+    color: white;    
+    background-color: #40bdaf;
+    border-color: #40bdaf;
+}
+.THIS#preSalesTbl table thead tr th {
+    background-color: #cbede9;
+}
+.THIS#preSalesTbl table tbody tr:last-child td{
+    font-weight: bold;
+    background-color: #cbede9;
+}
+.THIS#preSalesTbl table tbody tr.subTotal td{
+    font-weight: bold;
+    color:#10655c;
+    background-color: #ebf8f7;
+}
+.THIS .alterInfo {
+	border: solid 1px #40bdaf;
+}
+.THIS .alterInfo span{
+	overflow: visible;
+}
+.THIS .alterInfo h1{
+     color: #0d796d;
+    font-weight: bold;
+}

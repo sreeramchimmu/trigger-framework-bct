@@ -1,0 +1,249 @@
+<apex:page controller="RevenueMutiLineEdit" id="mutilEditForm" showHeader="true" lightningStylesheets="false" docType="html-5.0" sidebar="false">
+    <style type="text/css">
+        .amtFieldWidth {
+            width: 90px;
+        }
+
+        .popupBackground {
+            background-color: black;
+            opacity: 0.50;
+            filter: alpha(opacity=20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+
+        .custPopup {
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            margin: 0% 10%;
+            z-index: 9999;
+            padding: 10px;
+            position: absolute;
+            width: 500px;
+            top: 100px;
+        }
+    </style>
+    <script>
+        function selectAllCheckboxes(obj, receivedInputID) {
+            var inputCheckBox = document.getElementsByTagName("input");
+            for (var i = 0; i < inputCheckBox.length; i++) {
+                if (inputCheckBox[i].id.indexOf(receivedInputID) != -1) {
+                    inputCheckBox[i].checked = obj.checked;
+                }
+            }
+        }
+
+        function headerCheckBoxValue(condition) {
+            document.querySelectorAll("[id*='checkBoxHeaderId']")[0].checked = condition;
+        }
+
+        //created a own for each loop
+        var forEach = function (array, callback, scope) {
+            for (var i = 0; i < array.length; i++) {
+                callback.call(scope, i, array[i]); // passes back stuff we need
+            }
+        };
+
+        var numberReplaceComma = function (value) {
+            var str = value;
+            return str.replace(/,/g, "");
+        }
+
+        var opp_Line_Amount__c = 0;
+        function calculation(obj) {
+            opp_Line_Amount__c = document.querySelectorAll("[id*='Opp_Line_Amount__c']")[0].innerText;
+            var result = balanceCalculation(opp_Line_Amount__c);
+            if (result.balanceAmt < 0) {
+                obj.value = "";
+                result = balanceCalculation(opp_Line_Amount__c);
+                //alert('Milestone Amount should not exceed the Opportunity Line value!!');
+                alert('The Sum of all splitted Revenue amounts should be equal to Opportunity Line Amount..');
+            }
+            document.querySelectorAll("[id*='availableAmt']")[0].innerText = result.availableAmt;
+            document.querySelectorAll("[id*='balanceAmt']")[0].innerText = result.balanceAmt;
+        }
+
+        function balanceCalculation(opp_Line_Amount__c) {
+            var availableAmt = 0, balanceAmt = 0;
+            var myNodeList = document.querySelectorAll("[class*='Percentage__c']");
+            forEach(myNodeList, function (index, value) {
+                if (value.tagName == 'INPUT') {
+                    availableAmt += parseFloat(numberReplaceComma(value.value) || 0);
+                } else {
+                    availableAmt += parseFloat(numberReplaceComma(value.innerText) || 0);
+                }
+            }); balanceAmt = parseFloat(opp_Line_Amount__c) - parseFloat(availableAmt);
+            return {
+                availableAmt: availableAmt,
+                balanceAmt: balanceAmt
+            }
+        }
+
+        function splitValuesEqually(){
+            // var t = '12345678';
+            // getSplitEquallyParam(t);
+        }
+
+    </script>
+    <apex:pageMessages />
+    <apex:form >
+        
+        <apex:outputPanel rendered="{!noRecords==false}">
+            <apex:pageBlock title="Revenue - MultiLineEdit" id="mle">
+                <apex:actionStatus startText="requesting..." stopText="" id="actionStatus"/>
+                <apex:pageBlockButtons >
+                  
+                    <!-- <apex:commandButton action="{!deleteRevenue}" value="Delete" onclick="deleteConformation();" /> -->
+                    <!-- <apex:commandButton action="{!}"value="Split Values Equally" onclick="splitValuesEqually();" /> -->
+                    <!--<apex:commandButton value="Split Values Equally" onclick="splitValuesEqually();" />
+                    <apex:actionFunction action="{!splitValuesEqually}" name="getSplitEquallyParam" status="myStatus" reRender="mle">
+                        <apex:param name="firstParam" value=""/>
+                    </apex:actionFunction> -->
+                    <!-- <apex:commandButton action="{!splitValuesEqually}" value="Split Values Equally" onclick="headerCheckBoxValue(true);">
+                            <apex:actionSupport event="onclick" reRender="mle"/>
+                    </apex:commandButton> -->
+                    <!-- <apex:commandButton action="{!splitValuesEqually}" value="Split Values Equally"/> -->
+                    <!-- <apex:commandButton action="{!openPopup}" value="Delete" /> -->
+                    
+                    <apex:commandButton action="{!saveRevenue}" value="Update" onclick="headerCheckBoxValue(false);" />
+                    <!-- <apex:commandButton action="{!openPopup}" value="Split Values Equally" reRender="mle" > 
+                        <apex:param name="actionParam" value="splitValues"/>
+                    </apex:commandButton>-->
+                    <apex:commandButton action="{!openPopup}" value="Delete" reRender="mle">
+                        <apex:param name="actionParam" value="delete"/>
+                    </apex:commandButton>
+                    <apex:commandButton action="{!resetPage}" value="Reset" />
+                    <apex:commandButton action="{!addSplitRev}" value="Split Revenues"/>
+                    <apex:commandButton action="{!navBack}" value="GoTo Opportunity Line" immediate="true" />
+                </apex:pageBlockButtons> 
+
+                <apex:pageBlockSection columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Opportunity Stage"></apex:outputLabel>
+                        <apex:outputLabel value="{!wrapRevenueList[0].rev.Opportuntiy_Stage__c}"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Opportunity Funnel code"></apex:outputLabel>
+                        <apex:outputLabel value="{!wrapRevenueList[0].rev.Funnel_Code_Rev__c}"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Opportunity Line value"></apex:outputLabel>
+                        <apex:outputLabel value="{!wrapRevenueList[0].rev.Opp_Line_Amount__c}" id="Opp_Line_Amount__c"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Available Amount"></apex:outputLabel>
+                        <apex:outputLabel value="{!wrapRevenueList[0].availableAmt}" id="availableAmt"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Balance Amount"></apex:outputLabel>
+                        <apex:outputLabel value="{!wrapRevenueList[0].balanceAmt}" id="balanceAmt"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockTable value="{!wrapRevenueList}" var="wrap" columnsWidth="6.66%,6.66%,6.66%,6.66%,6.66%,6.66%,35%,6.66%,6.66%,35%,6.66%,6.66%,6.66%,6.66%,6.66%">
+                    <apex:column headerValue="Select All">
+                        <apex:facet name="header">
+                            <apex:inputCheckbox onclick="selectAllCheckboxes(this,'checkBoxId')" id="checkBoxHeaderId">
+                                <apex:actionSupport event="onchange" reRender="mle" />
+                            </apex:inputCheckbox>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!wrap.isChecked}" id="checkBoxId">
+                            <apex:actionSupport event="onchange" reRender="mle"/>
+                        </apex:inputCheckbox>
+                    </apex:column>
+                    <apex:column headerValue="RevenueID#">
+                        <apex:outputLink value="/{!wrap.rev.id}">
+                            <apex:outputText value="{!wrap.rev.name}" html-class="panel" />
+                        </apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Milestone">
+                        <apex:outputText value="{!wrap.rev.Milestone__c}" rendered="{!wrap.isChecked==false}" style="width:200px" />
+                        <apex:inputField value="{!wrap.rev.Milestone__c}" rendered="{!wrap.isChecked==true}" style="width:200px" />
+                    </apex:column>
+                    <apex:column headerValue="Revenue Date">
+                        <apex:outputText Value="{0,date,MM'/'dd'/'yyyy}" rendered="{!wrap.isChecked==false}">
+                            <apex:param value="{!wrap.rev.Revenue_Date__c}" />
+                        </apex:outputText>
+                        <apex:inputField Value="{!wrap.rev.Revenue_Date__c}" rendered="{!wrap.isChecked==true}" />
+                    </apex:column>
+                    <apex:column headerValue="Milestone Basic">
+                        <apex:outputText value="{!wrap.rev.Milestone_Basis__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputField value="{!wrap.rev.Milestone_Basis__c}" rendered="{!wrap.isChecked==true}" />
+                    </apex:column>
+                    <apex:column headerValue="Milestone Amount">  
+                        
+             <!-- changed by sreeram on 10/July/2020 for Formatting in Currency USD :::STARTS::: -->           
+                        <!-- <apex:outputField Value="{!wrap.rev.Percentage__c}" rendered="{!wrap.isChecked==false}" /> -->
+                        <apex:outputText value="{0, Number, {!userCurrency} ###,###}" rendered="{!wrap.isChecked==false}" >
+                        	<apex:param value="{!wrap.rev.Percentage__c}" />
+                        </apex:outputText>
+             <!-- changed by sreeram on 10/July/2020 for Formatting in Currency USD :::ENDS::: -->            
+                        <apex:inputField Value="{!wrap.rev.Percentage__c}" rendered="{!wrap.isChecked==true}" styleClass="amtFieldWidth"
+                            onkeyup="calculation(this);" />
+                    </apex:column>
+                    <apex:column headerValue="Total Amount">
+                        <apex:outputField value="{!wrap.rev.Amount__c}" style="width:100px"/>
+                    </apex:column>
+                    <apex:column headerValue="COGS BCTPL">
+                        <apex:outputField value="{!wrap.rev.Total_COGS_BCTPL_Rev__c}" />
+                    </apex:column>
+                    <apex:column headerValue="COGS Others">
+                        <apex:outputField value="{!wrap.rev.Total_COGS_Others_Rev__c}" />
+                    </apex:column>
+                    <apex:column headerValue="Gross Margin">
+                        <apex:outputField value="{!wrap.rev.Geo_Margin__c}" />
+                    </apex:column>
+         <!-- changes made by sreeram on 28-Apr-2020 for MLE updation bug; 
+			  inputText tag has been changed to inputField tag :::STARTS:::-->
+                   <apex:column headerValue="Actual Revenue">
+                        <apex:outputField value="{!wrap.rev.Recognized_Amount__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputField value="{!wrap.rev.Recognized_Amount__c}" rendered="{!wrap.isChecked==true}" styleClass="amtFieldWidth" />
+                    </apex:column>
+                    <apex:column headerValue="Actual COGS-BCTPL">
+                        <apex:outputField value="{!wrap.rev.Actual_COGS_BCTPL__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputField value="{!wrap.rev.Actual_COGS_BCTPL__c}" rendered="{!wrap.isChecked==true}" styleClass="amtFieldWidth" />
+                    </apex:column>
+                    <apex:column headerValue="Actual COGS-Others">
+                        <apex:outputField value="{!wrap.rev.Actual_COGS_Others__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputField value="{!wrap.rev.Actual_COGS_Others__c}" rendered="{!wrap.isChecked==true}" styleClass="amtFieldWidth" />
+                    </apex:column>
+                    <apex:column headerValue="Actual-GM">
+                        <apex:outputField value="{!wrap.rev.Actual_GM__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputField value="{!wrap.rev.Actual_GM__c}" rendered="{!wrap.isChecked==true}" styleClass="amtFieldWidth" />
+                    </apex:column>
+         <!-- changes made by sreeram on 28-Apr-2020 for MLE updation bug; 
+			  inputText tag has been changed to inputField tag :::ENDS:::-->
+                    <apex:column headerValue="Comments">
+                        <apex:outputText Value="{!wrap.rev.Change_Reason__c}" rendered="{!wrap.isChecked==false}" />
+                        <apex:inputTextarea value="{!wrap.rev.Change_Reason__c}" rendered="{!wrap.isChecked==true}"></apex:inputTextarea>
+                    </apex:column>
+                </apex:pageBlockTable>
+                <apex:outputPanel id="tstpopup" rendered="{!showPopup}">
+                    <apex:outputPanel styleClass="popupBackground" layout="block" />
+                    <apex:outputPanel styleClass="custPopup" layout="block">
+                        <center>
+                            <apex:outputText value="Are you sure want to delete the selected revenues ???"  rendered="{!popupButtonAction=='delete'}"/> 
+                            <apex:outputText value="Are you sure want to split the Total Opp.Line = {!wrapRevenueList[0].rev.Opp_Line_Amount__c} equally ???"  rendered="{!popupButtonAction=='splitValues'}"/> 
+                            <br></br>
+                            <br></br>
+                            <apex:commandButton value="Yes" action="{!deleteRevenue}" rendered="{!popupButtonAction=='delete'}"/>
+                            <apex:commandButton value="Yes" action="{!splitValuesEqually}" rendered="{!popupButtonAction=='splitValues'}"/>
+                            &nbsp; &nbsp;
+                            <apex:commandButton value="No" action="{!Cancel}" />
+                        </center>
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!noRecords==true}">
+         <apex:commandButton action="{!addSplitRev}" value="Split Revenues" immediate="true" style="margin-left: 400px;"/>
+        <apex:commandButton action="{!navBack}" value="GoTo Opportunity Line" immediate="true" style="margin-left: 20px;"/>
+        </apex:outputPanel>
+    </apex:form>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+</apex:page>
